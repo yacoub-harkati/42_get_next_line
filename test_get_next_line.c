@@ -6,7 +6,7 @@
 /*   By: yaharkat <yaharkat@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 22:04:01 by yaharkat          #+#    #+#             */
-/*   Updated: 2023/11/12 01:01:56 by yaharkat         ###   ########.fr       */
+/*   Updated: 2023/11/12 04:28:55 by yaharkat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	main(void)
 	int fd;
 	char *line;
 	int i;
-	
+
 	fd = open("test.txt", O_RDONLY);
 	if (fd == -1)
 	{
@@ -25,12 +25,32 @@ int	main(void)
 		return (1);
 	}
 	i = 0;
-	while (i < 11)
+	while (i < 81)
 	{
 		line = get_next_line(fd);
-		printf("Line %d: %s\n", i + 1, line);
+		printf("Line %d: %s", i + 1, line);
 		i++;
 		free(line);
 	}
 	return (0);
 }
+
+// int	main(void)
+// {
+//     int fd;
+//     char *line;
+//     int i;
+
+//     fd = 0;
+//     i = 0;
+//     line = get_next_line(fd);
+//     while (line && i < 2)
+//     {
+//         printf("Line %d: %s\n", i + 1, line);
+//         i++;
+//         free(line);
+//         line = get_next_line(fd);
+//     }
+// 	free(line);
+//     return (0);
+// }
