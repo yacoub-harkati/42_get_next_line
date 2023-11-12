@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yaharkat <yaharkat@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 21:59:16 by yaharkat          #+#    #+#             */
-/*   Updated: 2023/11/12 04:07:37 by yaharkat         ###   ########.fr       */
+/*   Updated: 2023/11/12 04:33:02 by yaharkat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,10 +74,10 @@ char	*read_line_lines(char *buffer, char *line, int fd,
 char	*get_next_line(int fd)
 {
 	char		*line[2];
-	static char	*buffer;
+	static char	*buffer[1024];
 	ssize_t		bytes_read;
 
-	line[0] = initisalize_buffer(buffer);
+	line[0] = initisalize_buffer(buffer[fd]);
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line[0], 0) < 0)
 	{
 		free(line[0]);
@@ -85,9 +85,9 @@ char	*get_next_line(int fd)
 	}
 	bytes_read = 1;
 	while (bytes_read > 0 && !ft_strchr(line[0], '\n'))
-		buffer = read_line_lines(buffer, line[0], fd, &bytes_read);
+		buffer[fd] = read_line_lines(buffer[fd], line[0], fd, &bytes_read);
 	free(line[0]);
-	line[1] = get_clean_line(buffer);
-	buffer = get_rest(buffer);
+	line[1] = get_clean_line(buffer[fd]);
+	buffer[fd] = get_rest(buffer[fd]);
 	return (line[1]);
 }
