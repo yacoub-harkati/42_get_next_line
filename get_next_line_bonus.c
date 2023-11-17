@@ -6,7 +6,7 @@
 /*   By: yaharkat <yaharkat@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 21:59:16 by yaharkat          #+#    #+#             */
-/*   Updated: 2023/11/16 02:12:46 by yaharkat         ###   ########.fr       */
+/*   Updated: 2023/11/17 22:07:50 by yaharkat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ char	*read_line_lines(char *buffer, char *line, int fd, ssize_t *bytes_read)
 	*bytes_read = read(fd, line, BUFFER_SIZE);
 	if (*bytes_read < 0)
 	{
+		free(buffer);
 		free(line);
 		return (NULL);
 	}
@@ -87,14 +88,18 @@ char	*get_next_line(int fd)
 	line[0] = initisalize_buffer();
 	if (line[0] == NULL)
 		return (NULL);
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line[0], 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 	{
 		free(line[0]);
 		return (NULL);
 	}
 	bytes_read = 1;
 	while (bytes_read > 0 && !ft_strchr(line[0], '\n'))
+	{
 		buffer[fd] = read_line_lines(buffer[fd], line[0], fd, &bytes_read);
+		if (!buffer[fd])
+			return (NULL);
+	}
 	line[1] = get_clean_line(buffer[fd]);
 	buffer[fd] = get_rest(buffer[fd]);
 	free(line[0]);
