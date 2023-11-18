@@ -6,7 +6,7 @@
 /*   By: yaharkat <yaharkat@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/11 21:59:16 by yaharkat          #+#    #+#             */
-/*   Updated: 2023/11/12 04:07:37 by yaharkat         ###   ########.fr       */
+/*   Updated: 2023/11/18 02:51:27 by yaharkat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,11 @@ char	*get_rest(char *s)
 	int		len;
 
 	i = 0;
-	if (!s)
+	if (!s[i])
+	{
+		free(s);
 		return (NULL);
+	}
 	while (s[i] && s[i] != '\n')
 		i++;
 	if (s[i] && s[i] == '\n')
@@ -44,8 +47,10 @@ char	*get_rest(char *s)
 	return (rest);
 }
 
-char	*initisalize_buffer(char *buffer)
+char	*initisalize_buffer(void)
 {
+	char	*buffer;
+
 	if (BUFFER_SIZE <= 0)
 		return (NULL);
 	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
@@ -55,8 +60,7 @@ char	*initisalize_buffer(char *buffer)
 	return (buffer);
 }
 
-char	*read_line_lines(char *buffer, char *line, int fd,
-		ssize_t *bytes_read)
+char	*read_line_lines(char *buffer, char *line, int fd, ssize_t *bytes_read)
 {
 	if (fd < 0 || BUFFER_SIZE <= 0)
 	{
@@ -65,7 +69,11 @@ char	*read_line_lines(char *buffer, char *line, int fd,
 	}
 	*bytes_read = read(fd, line, BUFFER_SIZE);
 	if (*bytes_read < 0)
+	{
+		free(line);
+		free(buffer);
 		return (NULL);
+	}
 	line[*bytes_read] = '\0';
 	buffer = ft_strjoin(buffer, line);
 	return (buffer);
@@ -77,17 +85,23 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	ssize_t		bytes_read;
 
-	line[0] = initisalize_buffer(buffer);
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, line[0], 0) < 0)
+	line[0] = initisalize_buffer();
+	if (line[0] == NULL)
+		return (NULL);
+	if (fd < 0 || BUFFER_SIZE <= 0)
 	{
 		free(line[0]);
 		return (NULL);
 	}
 	bytes_read = 1;
 	while (bytes_read > 0 && !ft_strchr(line[0], '\n'))
+	{
 		buffer = read_line_lines(buffer, line[0], fd, &bytes_read);
-	free(line[0]);
+		if (!buffer)
+			return (NULL);
+	}
 	line[1] = get_clean_line(buffer);
 	buffer = get_rest(buffer);
+	free(line[0]);
 	return (line[1]);
 }
